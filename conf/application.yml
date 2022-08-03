@@ -1,0 +1,46 @@
+server:
+  type: default
+  applicationConnectors:
+    - type: http
+      port: 9002
+      acceptQueueSize: 128  # github dropwizard issue 2429
+  adminConnectors:
+    - type: http
+      port: 9001
+  maxThreads: 300
+  maxQueuedRequests: 300
+  requestLog:
+    appenders:
+      - type: console
+        threshold: ALL
+        layout:
+          type: json
+          includes:
+            - requestTime
+            - method
+            - requestUri
+            - contentLength
+            - requestContent
+            - timestamp
+            - statusCode
+            - pathQuery
+          responseHeaders:
+            - x-trace-id
+            - api-metadata
+            - x-catalog-userid
+            - X-RateLimit-Cost
+            - X-RateLimit-Remaining
+            - X-Auth-Service-Name
+
+logging:
+  level: INFO
+  appenders:
+    - type: console
+      threshold: INFO
+      timeZone: GMT
+      layout:
+        type: json
+        includesMdcKeys: ["authServiceName", "traceId", "userId"]
+  loggers:
+    com.zulily.dropwizard.jersey.Slf4jLoggingFeature: INFO
+    org.reflections.Reflections: ERROR
